@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Anti-Piracy Dashboard</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #020617, #020617);
+            color: #e5e7eb;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #38bdf8;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 25px;
+            width: 360px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #f8fafc;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #38bdf8;
+            color: #020617;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success {
+            background: #064e3b;
+            border-left: 5px solid #22c55e;
+        }
+
+        .detected {
+            background: #3f1d1d;
+            border-left: 5px solid #ef4444;
+        }
+
+        .label {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🎬 AI-Driven Anti-Piracy Dashboard</h1>
+
+<div class="container">
+
+    <!-- Embed Watermark -->
+    <div class="card">
+        <h3>Embed Watermark</h3>
+
+        <input id="video" value="Movie_Print_V1.mp4" placeholder="Video name">
+        <input id="watermark" value="THEATRE_42_SCREEN_3" placeholder="Watermark ID">
+
+        <button onclick="embed()">Embed Watermark</button>
+
+        <div id="embedResult" class="result success"></div>
+    </div>
+
+    <!-- Extract Watermark -->
+    <div class="card">
+        <h3>Extract Watermark</h3>
+
+        <input id="leaked" value="Pirated_Copy_Telegram.mp4" placeholder="Leaked video name">
+
+        <button onclick="extract()">Detect Leak</button>
+
+        <div id="extractResult" class="result detected"></div>
+    </div>
+
+</div>
+
+<script>
+const API_BASE = "https://ai-driven-anti-piracy-backend.onrender.com";
+
+function embed() {
+    fetch(`${API_BASE}/embed-watermark?video_name=${video.value}&watermark_id=${watermark.value}`, {
+        method: "POST"
+    })
+    .then(res => res.json())
+    .then(data => {
+        embedResult.style.display = "block";
+        embedResult.innerHTML = `
+            <div class="label">Status</div>
+            <div class="value">✅ Watermark Embedded</div>
+            <br>
+            <div class="label">Details</div>
+            <div class="value">${data.message}</div>
+        `;
+    })
+    .catch(() => alert("Backend not reachable"));
+}
+
+function extract() {
+    fetch(`${API_BASE}/extract-watermark?leaked_video_name=${leaked.value}`, {
+        method: "POST"
+    })
+    .then(res => res.json())
+    .then(data => {
+        extractResult.style.display = "block";
+        extractResult.innerHTML = `
+            <div class="label">Status</div>
+            <div class="value">🚨 Leak Detected</div>
+            <br>
+            <div class="label">Watermark ID</div>
+            <div class="value">${data.watermark_id}</div>
+            <br>
+            <div class="label">Source File</div>
+            <div class="value">${data.source}</div>
+        `;
+    })
+    .catch(() => alert("Backend not reachable"));
+}
+</script>
+
+</body>
+</html>
